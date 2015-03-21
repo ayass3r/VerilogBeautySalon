@@ -1,5 +1,13 @@
 import re
 
+class Input():
+	name = "defaultname"
+	ports = []
+
+class Output():
+	name = "defaultname"
+	ports = []
+
 class Wire():
 	name = "defaultname"
 	ports = []
@@ -22,8 +30,10 @@ def main():
 	
 	
 
-	#########get all wires excluding buses
+	#########get all wires/inputs/outputs excluding buses
 	wirelist = []
+	inputlist = []
+	outputlist = []
 	for x in verilogfile:
 		p = re.compile("\s*wire\s*(\S*);")
 		m = p.match(x)
@@ -31,6 +41,21 @@ def main():
 			wirex = Wire()
 			wirex.name = m.group(1)
 			wirelist.append(wirex)
+		else:
+			p = re.compile("\s*input\s*(\S*);")
+			m = p.match(x)
+			if m is not None:
+				inputx = Input()
+				inputx.name = m.group(1)
+				inputlist.append(inputx)
+			else:
+				p = re.compile("\s*output\s*(\S*);")
+				m = p.match(x)
+				if m is not None:
+					outputx = Output()
+					outputx.name = m.group(1)
+					outputlist.append(outputx)
+
 	
 
 	#put cursor at begining of file		
@@ -50,11 +75,35 @@ def main():
 				wirex = Wire()
 				wirex.name = m.group(2)+" ["+str(i)+"]"
 				wirelist.append(wirex)
+		else:
+			p = re.compile("\s*input\s*\[(\d+):\d\]\s*(\S+)\s*;")
+			m = p.match(x)
+			if m is not None:
+				for i in range(int(m.group(1))+1):
+					inputx = Input()
+					inputx.name = m.group(2)+" ["+str(i)+"]"
+					inputlist.append(inputx)
+			else:
+				p = re.compile("\s*output\s*\[(\d+):\d\]\s*(\S+)\s*;")
+				m = p.match(x)
+				if m is not None:
+					for i in range(int(m.group(1))+1):
+						outputx = Output()
+						outputx.name = m.group(2)+" ["+str(i)+"]"
+						outputlist.append(outputx)
 	########output wire names
-	#i = 0 
-	#for j in wirelist:
-	#	print (wirelist[i].name)
-	#	i = i+1
+	i = 0 
+	for j in wirelist:
+		#print (wirelist[i].name)
+		i = i+1
+	i = 0 
+	for j in inputlist:
+		print (inputlist[i].name)
+		i = i+1
+	i = 0 
+	for j in outputlist:
+		print (outputlist[i].name)
+		i = i+1
 	###########################
 	
 	#put cursor at begining of file		
@@ -227,7 +276,7 @@ def main():
 
 	h = 0 
 	for z in gatelist:
-		print(gatelist[h].gtype+" "+gatelist[h].name+" "+gatelist[h].inputport1+" "+gatelist[h].inputport2+" "+gatelist[h].outputport)
+		#print(gatelist[h].gtype+" "+gatelist[h].name+" "+gatelist[h].inputport1+" "+gatelist[h].inputport2+" "+gatelist[h].outputport)
 		h = h+1
 
 
