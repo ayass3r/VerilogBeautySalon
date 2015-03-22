@@ -1,5 +1,5 @@
 import re
-import networkx as nx
+
 
 
 class Wire():
@@ -112,7 +112,7 @@ def parseFF(gatelist, k, m, verilogfile, assignlist):
 		gatelist[k].outputport = s
 	returnlist.append(s)
 	return returnlist
-def getfirstlevel(mygraph, gatelist, prevgatelist):
+def getfirstlevel(gatelist, prevgatelist):
 	c = 0
 	nextgatelist = {}
 	for i, d in enumerate(gatelist):
@@ -133,7 +133,7 @@ def getfirstlevel(mygraph, gatelist, prevgatelist):
 	returnlist = [c, nextgatelist]
 	return returnlist
 
-def getnextlevel(mygraph, gatelist, prevgatelist):
+def getnextlevel(gatelist, prevgatelist):
 	c = 0
 	nextgatelist = {}
 	for i, d in enumerate(gatelist):
@@ -304,31 +304,28 @@ def main():
 																wiredict[sourcename[3]].source = sourcename[0]
 																k = k+1
 
-	#for j in wiredict:
-	#	print (wiredict[j].name+" "+str(wiredict[j].isInput)+" "+str(wiredict[j].isOutput)+" "+wiredict[j].source)
+	for j in wiredict:
+		print (wiredict[j].name+" "+str(wiredict[j].isInput)+" "+str(wiredict[j].isOutput)+" "+wiredict[j].source)
 
-	returnlist = getfirstlevel(G, gatelist, inputdict)
+	returnlist = getfirstlevel(gatelist, inputdict)
 	i = 0
 	while(len(gatelist) > returnlist[0]):
-		returnlist = getnextlevel(G, gatelist, returnlist[1])
+		returnlist = getnextlevel(gatelist, returnlist[1])
 		i = i +1
 		
 	
 	copyGatelist = gatelist
 	for i, h in enumerate(copyGatelist):
 		if((wiredict[copyGatelist[i].inputport1].isInput == False) and (wiredict[copyGatelist[i].inputport1].isOutput == False)):
-			print(wiredict[copyGatelist[i].inputport1].source, 'a')
 			copyGatelist[i].inputport1 = wiredict[copyGatelist[i].inputport1].source
 		if	(copyGatelist[i].inputport2 is not 'defaultname'):
 			if((wiredict[copyGatelist[i].inputport2].isInput == False) and (wiredict[copyGatelist[i].inputport2].isOutput == False)):
-				print(wiredict[copyGatelist[i].inputport2].source, 'b')
 				copyGatelist[i].inputport2 = wiredict[copyGatelist[i].inputport2].source
 		if((wiredict[copyGatelist[i].outputport].isInput == False) and (wiredict[copyGatelist[i].outputport].isOutput == False)):
-			print(wiredict[copyGatelist[i].outputport].source, 'c')
 			copyGatelist[i].outputport = wiredict[copyGatelist[i].outputport].source
 
-	#for h, z in enumerate(copyGatelist):
-		#print(copyGatelist[h].name+" "+copyGatelist[h].gtype+" "+str(copyGatelist[h].level)+" "+str(copyGatelist[h].connected1)+" "+str(copyGatelist[h].connected2)+" "+copyGatelist[h].inputport1+" "+copyGatelist[h].inputport2+" "+copyGatelist[h].outputport)
+	for h, z in enumerate(copyGatelist):
+		print(copyGatelist[h].name+" "+copyGatelist[h].gtype+" "+str(copyGatelist[h].level)+" "+str(copyGatelist[h].connected1)+" "+str(copyGatelist[h].connected2)+" "+copyGatelist[h].inputport1+" "+copyGatelist[h].inputport2+" "+copyGatelist[h].outputport)
 
 if __name__ == "__main__":
 	main()
